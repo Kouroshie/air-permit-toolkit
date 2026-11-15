@@ -2,7 +2,7 @@
 
 **Live tool: https://kouroshie.github.io/air-permit-toolkit/**
 
-A free browser calculator for checking the numbers in an air permit application the way a reviewer does. It covers Bay Area Air District rules: emission rates, BACT and offset triggers (Regulation 2-2), toxic air contaminant screening and health risk (Regulation 2-5), and new-source fees (Regulation 3). Every result comes with its arithmetic trail, units and sources, so anyone can repeat the calculation by hand.
+A free browser calculator for working through the numbers in an air permit application. It covers Bay Area Air District rules: emission rates, BACT and offset triggers (Regulation 2-2), toxic air contaminant screening and health risk (Regulation 2-5), and new-source fees (Regulation 3). Every result comes with its arithmetic trail, units and sources, so anyone can repeat the calculation by hand.
 
 ![Toxics screening page](docs/screenshot.png)
 
