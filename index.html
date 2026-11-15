@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Air Permit Engineering Toolkit</title>
+<meta name="description" content="Open-source browser calculator for air permit review in the San Francisco Bay Area: emission rates, BACT and offset triggers, toxic air contaminant screening, health risk and Regulation 3 permit fees, with every step of the arithmetic shown.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to calculator</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <h1>Air Permit Engineering Toolkit</h1>
+    <p class="lede">Check the numbers in an air permit application the way a reviewer does: emission rates, BACT and offset triggers, toxics screening, health risk and permit fees. Every result shows its arithmetic, units and source.</p>
+    <p class="scope">Built around Bay Area Air District rules (Regulations 2-2, 2-5 and 3). Independent open-source project, not affiliated with or endorsed by the Air District. Runs in your browser; nothing is uploaded.</p>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Calculators">
+    <div id="nav"></div>
+    <div class="project-pill" id="projectPill" hidden></div>
+  </nav>
+  <main id="main" tabindex="-1">
+    <div id="view"></div>
+  </main>
+</div>
+
+<footer class="foot">
+  <p>Screening and teaching tool. Final permit decisions rest on the current rule text, Air District procedures and an engineer's review. Check the <a href="https://www.baaqmd.gov/en/rules-and-compliance/current-rules">current rules</a> before relying on any threshold or fee.</p>
+  <p>MIT licensed. Source, methods and tests: <a href="https://github.com/Kouroshie/air-permit-toolkit">github.com/Kouroshie/air-permit-toolkit</a>. Built by Seyed Kourosh Mahjour, PhD. Companion to the <a href="https://kouroshie.github.io/petroleum-toolkit/">Petroleum Engineering Toolkit</a>.</p>
+</footer>
+
+<script src="calc.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
