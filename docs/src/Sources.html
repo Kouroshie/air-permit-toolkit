@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sources</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,650&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit.css">
+<style>td a { word-break: break-all; } td.u { font-size: 7.8pt; width: 34%; }</style></head><body>
+
+<div class="band">
+  <p class="kit">Air Permit Engineering Toolkit · Sources</p>
+  <h1>Sources used to build the tool</h1>
+  <p class="sub">Every rule, manual, dataset and reference the toolkit's values come from, what each one supplies, and where to find it. All links were checked on November 15, 2026.</p>
+  <div class="meta"><span><b>Rule versions:</b> Reg 2-2 (12/6/2017), Reg 2-5 (12/15/2021), Reg 3 (adopted 6/3/2026, effective 7/1/2026)</span></div>
+</div>
+
+<h2>What the Air District website already offers</h2>
+<p>A review of baaqmd.gov on November 15, 2026 found no single web calculator for permit review. The public calculation resources are the Permit Handbook (a 316-page PDF), per-category Excel spreadsheets linked from it, the CEQA Health Risk Calculator 5.0 spreadsheet, screening maps, and an example engine fee sheet. The toolkit does not replace any of them. It puts the public methods side by side, in the browser, with the arithmetic shown.</p>
+
+<h2>1. Air District rules</h2>
+<table>
+  <thead><tr><th style="width:30%">Source</th><th>Used for</th><th class="u">Link</th></tr></thead>
+  <tbody>
+    <tr><td>Regulation 2, Rule 2, New Source Review (amended Dec 6, 2017)</td><td>BACT at 10.0 lb/day (2-2-301); NOx and POC offsets above 10 and below 35 tpy at 1:1 (302.1) and at 35 tpy or more at 1.15:1 (302.2); PM2.5, PM10 and SO2 offsets at 100 tpy (303)</td><td class="u"><a href="https://www.baaqmd.gov/~/media/dotgov/files/rules/regulation-2-rule-2/documents/20171206_fr_0202-pdf.pdf">baaqmd.gov/~/media/dotgov/files/rules/regulation-2-rule-2/documents/20171206_fr_0202-pdf.pdf</a></td></tr>
+    <tr><td>Regulation 2, Rule 5, New Source Review of Toxic Air Contaminants, with Table 2-5-1 (amended Dec 15, 2021)</td><td>TBACT triggers (2-5-301), project limits including the Overburdened Community limit (2-5-302), acute and chronic trigger levels, and the CP weighting and CREL weighting values for 20 contaminants</td><td class="u"><a href="https://www.baaqmd.gov/~/media/dotgov/files/rules/reg-2-permits/2021-amendments/documents/20211215_rg0205-pdf.pdf">baaqmd.gov/~/media/dotgov/files/rules/reg-2-permits/2021-amendments/documents/20211215_rg0205-pdf.pdf</a></td></tr>
+    <tr><td>Regulation 3, Fees (adopted Jun 3, 2026, effective Jul 1, 2026)</td><td>Filing fee $684; Schedule B initial, risk assessment and permit to operate fees with minimums and maximums; toxic and solid-fuel surcharges; Schedule D per nozzle-product; public notice and Overburdened Community HRA fees; Schedule T GHG fee and GWPs (CH4 34, N2O 298)</td><td class="u"><a href="https://www.baaqmd.gov/~/media/dotgov/files/rules/reg-3-fees/2026-amendment/documents/20260603_rg0300-pdf.pdf">baaqmd.gov/~/media/dotgov/files/rules/reg-3-fees/2026-amendment/documents/20260603_rg0300-pdf.pdf</a></td></tr>
+    <tr><td>Regulation 3 Staff Report (May 2026)</td><td>Cross-check of the FY 2026-27 fee changes</td><td class="u"><a href="https://www.baaqmd.gov/~/media/dotgov/files/rules/reg-3-fees/2026-amendment/documents/regulation-3-staff-report-may-2026-pdf.pdf">baaqmd.gov/~/media/dotgov/files/rules/reg-3-fees/2026-amendment/documents/regulation-3-staff-report-may-2026-pdf.pdf</a></td></tr>
+    <tr><td>Current rules index</td><td>Confirming the versions in force</td><td class="u"><a href="https://www.baaqmd.gov/en/rules-and-compliance/current-rules">baaqmd.gov/en/rules-and-compliance/current-rules</a></td></tr>
+  </tbody>
+</table>
+
+<h2>2. Air District manuals, tools and policies</h2>
+<table>
+  <thead><tr><th style="width:30%">Source</th><th>Used for</th><th class="u">Link</th></tr></thead>
+  <tbody>
+    <tr><td>Permit Handbook (revised Oct 30, 2024)</td><td>Chapter 2.1 boilers (BACT at 10 MMBtu/hr, Method 19 form); 2.3.1 engines (CARB, then EPA, then manufacturer factors; 95% NOx and 5% POC split of NMHC + NOx); 3.2 gasoline dispensing; 5.1 coatings mass balance</td><td class="u"><a href="https://www.baaqmd.gov/en/permits/permitting-manuals/permit-handbook">baaqmd.gov/en/permits/permitting-manuals/permit-handbook</a></td></tr>
+    <tr><td>Permit Handbook emission spreadsheets</td><td>Reviewed to see the District's own per-category calculations</td><td class="u"><a href="https://www.baaqmd.gov/~/media/files/engineering/permit-handbook/baaqmd-permit-handbook.pdf">baaqmd.gov/~/media/files/engineering/permit-handbook/baaqmd-permit-handbook.pdf</a> (links inside)</td></tr>
+    <tr><td>Health Risk Calculator with Distance Multipliers, Beta 5.0 (May 3, 2022)</td><td>Annual chi/Q of 360 µg/m³ per g/s; age-group breathing rates 361, 1,090, 572 and 261 L/kg-day; FAH and ASF values; the 1.43833×10⁻⁵ g/s per lb/yr conversion. The toolkit's residential factor matches this calculator exactly.</td><td class="u"><a href="https://www.baaqmd.gov/~/media/files/planning-and-research/ceqa/tools/public-baaqmd-health-risk-calculator-beta-5-0-xlsx-xlsx.xlsx">baaqmd.gov/~/media/files/planning-and-research/ceqa/tools/public-baaqmd-health-risk-calculator-beta-5-0-xlsx-xlsx.xlsx</a></td></tr>
+    <tr><td>Health risk screening and modeling page; CEQA Guidelines 2022, Appendix E</td><td>Context for screening versus refined modeling; gas stations referred to the CARB screening tool</td><td class="u"><a href="https://www.baaqmd.gov/en/plans-and-climate/california-environmental-quality-act-ceqa/ceqa-tools/health-risk-screening-and-modeling">baaqmd.gov/en/plans-and-climate/california-environmental-quality-act-ceqa/ceqa-tools/health-risk-screening-and-modeling</a></td></tr>
+    <tr><td>Calculating Potential to Emit for Emergency Backup Power Generators (policy, Jun 3, 2019)</td><td>Adding 100 hr/yr of emergency operation for applicability, not for offset quantities or Rule 2-5</td><td class="u"><a href="https://www.baaqmd.gov/~/media/files/engineering/policy_and_procedures/banking-and-offsets/calculating-pte-for-emergency-generators-06032019-pdf.pdf">baaqmd.gov/~/media/files/engineering/policy_and_procedures/banking-and-offsets/calculating-pte-for-emergency-generators-06032019-pdf.pdf</a></td></tr>
+    <tr><td>Emission factors for diesel engines (policy)</td><td>Engine factor hierarchy</td><td class="u"><a href="https://www.baaqmd.gov/~/media/files/engineering/policy_and_procedures/engines/emissionfactorsfordieselengines.pdf">baaqmd.gov/~/media/files/engineering/policy_and_procedures/engines/emissionfactorsfordieselengines.pdf</a></td></tr>
+    <tr><td>Example Engine Permit Fees, FY 2026-27 (updated Sep 28, 2026)</td><td>Cross-check of the coded Schedule B fees and the 7,000 Btu/bhp-hr fee basis</td><td class="u"><a href="https://www.baaqmd.gov/~/media/files/engineering/ic-engine-permits/reference-1--fee-schedule-pdf.pdf">baaqmd.gov/~/media/files/engineering/ic-engine-permits/reference-1--fee-schedule-pdf.pdf</a></td></tr>
+    <tr><td>Engine permits page; BACT/TBACT Workbook page</td><td>How the District presents engine applications and BACT determinations</td><td class="u"><a href="https://www.baaqmd.gov/en/permits/apply-for-a-permit/engine-permits">baaqmd.gov/en/permits/apply-for-a-permit/engine-permits</a><br><a href="https://www.baaqmd.gov/en/permits/permitting-manuals/bact-tbact-workbook">baaqmd.gov/en/permits/permitting-manuals/bact-tbact-workbook</a></td></tr>
+  </tbody>
+</table>
+<p class="small muted">Not used: the standalone 2010 "table_2-5-1.pdf" on the District site, which the December 2021 rule supersedes. The tool uses the table printed in the 2021 rule.</p>
+
+<h2 class="pb">3. State of California</h2>
+<table>
+  <thead><tr><th style="width:30%">Source</th><th>Used for</th><th class="u">Link</th></tr></thead>
+  <tbody>
+    <tr><td>CARB (2013), Revised Emission Factors for Gasoline Marketing Operations at California Gasoline Dispensing Facilities</td><td>Table I-I factors for stations with enhanced vapor recovery (lb/1,000 gal): Phase I 0.15, breathing 0.024, refueling 0.42 without ORVR and 0.021 with ORVR, spillage 0.24, hose permeation 0.009</td><td class="u"><a href="https://ww3.arb.ca.gov/vapor/gdf-emisfactor/gdfumbrella.pdf">ww3.arb.ca.gov/vapor/gdf-emisfactor/gdfumbrella.pdf</a></td></tr>
+    <tr><td>OEHHA (2015), Air Toxics Hot Spots Program Guidance Manual for Preparation of Health Risk Assessments</td><td>Cancer risk equation, age sensitivity factors (10, 10, 3, 1), exposure frequency 350 days, averaging time 70 years, worker parameters and the worker adjustment factor</td><td class="u"><a href="https://oehha.ca.gov/air/crnr/notice-adoption-air-toxics-hot-spots-program-guidance-manual-preparation-health-risk-0">oehha.ca.gov/air/crnr/notice-adoption-air-toxics-hot-spots-program-guidance-manual-preparation-health-risk-0</a></td></tr>
+    <tr><td>Airborne Toxic Control Measure for Stationary Compression Ignition Engines (Cal. Code Regs., tit. 17, § 93115)</td><td>50 hr/yr maintenance and testing for new emergency engines (100 hr/yr below 0.01 g/bhp-hr PM), shown as guidance on the engine page</td><td class="u">California Code of Regulations</td></tr>
+    <tr><td>CARB DICE screening tool and 2024 screening risk guidelines</td><td>Reviewed for context on diesel engine screening; not coded</td><td class="u"><a href="https://ww2.arb.ca.gov/sites/default/files/classic/ab2588/2024%20DICE%20Screening%20Risk%20Guidelines.pdf">ww2.arb.ca.gov/sites/default/files/classic/ab2588/2024 DICE Screening Risk Guidelines.pdf</a></td></tr>
+  </tbody>
+</table>
+
+<h2>4. Federal</h2>
+<table>
+  <thead><tr><th style="width:30%">Source</th><th>Used for</th><th class="u">Link</th></tr></thead>
+  <tbody>
+    <tr><td>EPA AP-42, Section 1.4, Natural Gas Combustion (Jul 1998)</td><td>Small-boiler defaults: NOx 100, CO 84, VOC 5.5, PM 7.6, SO2 0.6 lb/10⁶ scf, converted at 1,020 Btu/scf</td><td class="u"><a href="https://www.epa.gov/sites/default/files/2020-09/documents/1.4_natural_gas_combustion.pdf">epa.gov/sites/default/files/2020-09/documents/1.4_natural_gas_combustion.pdf</a></td></tr>
+    <tr><td>EPA AP-42, Section 3.3, Gasoline and Diesel Industrial Engines (Oct 1996)</td><td>Brake-specific fuel use of 7,000 Btu/bhp-hr for engine heat input</td><td class="u"><a href="https://www.epa.gov/sites/default/files/2020-10/documents/c03s03.pdf">epa.gov/sites/default/files/2020-10/documents/c03s03.pdf</a></td></tr>
+    <tr><td>EPA AP-42, Section 13.5, Industrial Flares (Feb 2018)</td><td>Flare NOx 0.068 and CO 0.31 lb/MMBtu</td><td class="u"><a href="https://www.epa.gov/sites/default/files/2020-10/documents/13.5_industrial_flares.pdf">epa.gov/sites/default/files/2020-10/documents/13.5_industrial_flares.pdf</a></td></tr>
+    <tr><td>40 CFR Part 60, Appendix A-7, Method 19</td><td>Equation 19-1 and F<sub>d</sub> factors (8,710 natural gas, 9,190 oil dscf/MMBtu); oxygen correction</td><td class="u"><a href="https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-60/appendix-Appendix%20A-7%20to%20Part%2060">ecfr.gov/current/title-40/chapter-I/subchapter-C/part-60/appendix-Appendix A-7 to Part 60</a></td></tr>
+    <tr><td>40 CFR Part 98, Subpart C, Tables C-1 and C-2</td><td>CO2 53.06, CH4 0.001 and N2O 0.0001 kg/MMBtu for natural gas; distillate oil values</td><td class="u"><a href="https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-98/subpart-C">ecfr.gov/current/title-40/chapter-I/subchapter-C/part-98/subpart-C</a></td></tr>
+    <tr><td>40 CFR 1039.101, Table 1 (Tier 4)</td><td>Default generator factors above 900 kW: NOx 0.67, CO 3.5, NMHC 0.19, PM 0.03 g/kW-hr</td><td class="u"><a href="https://www.ecfr.gov/current/title-40/chapter-I/subchapter-U/part-1039/subpart-B/section-1039.101">ecfr.gov/current/title-40/chapter-I/subchapter-U/part-1039/subpart-B/section-1039.101</a></td></tr>
+    <tr><td>EPA screening models (SCRAM), AERSCREEN guidance</td><td>Annual concentration = 0.1 × the 1-hour maximum</td><td class="u"><a href="https://www.epa.gov/scram/air-quality-dispersion-modeling-screening-models">epa.gov/scram/air-quality-dispersion-modeling-screening-models</a></td></tr>
+  </tbody>
+</table>
+
+<h2>5. Textbook</h2>
+<table>
+  <tbody>
+    <tr><td style="width:30%">Turner, D. B. (1994). <i>Workbook of Atmospheric Dispersion Estimates</i>, 2nd ed. Lewis Publishers.</td><td>Gaussian plume equation; Briggs urban and rural dispersion coefficients; Briggs buoyant plume rise for neutral and stable conditions</td></tr>
+  </tbody>
+</table>
+
+<h2>6. How the tool itself was checked</h2>
+<table>
+  <tbody>
+    <tr><td style="width:30%">Worked examples</td><td>Seven practice calculations reproduced and hand-checked (Worked_Example_Checks.pdf)</td></tr>
+    <tr><td>Automated tests</td><td>50 checks in <span class="mono">tests/verify.mjs</span>, run with Node.js on every change</td></tr>
+    <tr><td>Code review</td><td>A line-by-line review that led to stable plume rise, peak-hour benzene, one breathing rate and fees stored in one data file</td></tr>
+    <tr><td>Google Deep Review</td><td>An AI review of the methods paper (research.google/deepreview, Nov 15, 2026). It found the series control error, now fixed; two citations it flagged were grouped references, not fabrications, and were split for clarity.</td></tr>
+    <tr><td>Methods paper</td><td><a href="https://kouroshie.github.io/air-permit-toolkit/docs/Air_Permit_Toolkit_Methods.pdf">kouroshie.github.io/air-permit-toolkit/docs/Air_Permit_Toolkit_Methods.pdf</a> (version 1.1)</td></tr>
+  </tbody>
+</table>
+
+<div class="foot">Values change: Regulation 3 fees are amended every July and rule amendments change thresholds. Check the current rules index before relying on any number. The toolkit is independent and is not affiliated with or endorsed by the Bay Area Air District.</div>
+</body></html>

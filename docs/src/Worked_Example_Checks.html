@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Worked example checks</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,650&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit.css"></head><body>
+
+<div class="band">
+  <p class="kit">Air Permit Engineering Toolkit · Verification</p>
+  <h1>Worked examples, run through the tool</h1>
+  <p class="sub">Common practice calculations for air permit work, entered into the live toolkit and compared with the worked answer and an independent hand calculation.</p>
+  <div class="meta"><span><b>Inputs:</b> hypothetical practice values</span><span><b>Tool run:</b> November 15, 2026, live site, commit 098a05b</span></div>
+</div>
+
+<div class="note ok"><p><b>Result: every worked answer matches the tool.</b> 18 of 18 values agree. The only differences are rounding: the worked answers show 66.1 lb and 0.0331 tons, and the tool shows 66.14 and 0.03307. The tool also adds the regulatory flags that come next: BACT for the boiler and generator, and a Rule 2-5 health risk assessment for the generator.</p></div>
+
+<h2>Summary</h2>
+<table>
+  <thead><tr><th>Example</th><th>Quantity</th><th class="num">Worked answer</th><th class="num">Tool</th><th class="num">Hand check</th><th></th></tr></thead>
+  <tbody>
+    <tr><td rowspan="4">1. Natural gas boiler<br><span class="small muted">5 MMBtu/hr, 0.10 lb/MMBtu, 2,000 hr/yr</span></td><td>Hourly</td><td class="num">0.50 lb/hr</td><td class="num">0.5 lb/hr</td><td class="num">5 × 0.10 = 0.50</td><td class="match">Match</td></tr>
+    <tr><td>Maximum day (24 hr)</td><td class="num">12 lb/day</td><td class="num">12 lb/day</td><td class="num">0.50 × 24 = 12</td><td class="match">Match</td></tr>
+    <tr><td>Annual</td><td class="num">1,000 lb/yr</td><td class="num">1,000 lb/yr</td><td class="num">0.50 × 2,000</td><td class="match">Match</td></tr>
+    <tr><td>Annual</td><td class="num">0.50 ton/yr</td><td class="num">0.5 ton/yr</td><td class="num">1,000 / 2,000</td><td class="match">Match</td></tr>
+    <tr><td rowspan="4">2. Diesel generator<br><span class="small muted">400 hp, 1.5 g/hp-hr, 50 hr/yr</span></td><td>Hourly</td><td class="num">1.323 lb/hr</td><td class="num">1.323 lb/hr</td><td class="num">600 / 453.592 = 1.3228</td><td class="match">Match</td></tr>
+    <tr><td>Annual</td><td class="num">66.1 lb/yr</td><td class="num">66.14 lb/yr</td><td class="num">1.3228 × 50 = 66.139</td><td class="match">Match</td></tr>
+    <tr><td>Annual</td><td class="num">0.0331 ton/yr</td><td class="num">0.03307 ton/yr</td><td class="num">66.139 / 2,000</td><td class="match">Match</td></tr>
+    <tr><td>Day if 24 hr possible</td><td class="num">31.75 lb/day</td><td class="num">31.75 lb/day</td><td class="num">1.3228 × 24 = 31.747</td><td class="match">Match</td></tr>
+    <tr><td rowspan="2">3. Flare<br><span class="small muted">100 Mscf, 1,000 Btu/scf, 0.05 lb/MMBtu</span></td><td>Heat released</td><td class="num">100 MMBtu</td><td class="num">100 MMBtu</td><td class="num">100,000 × 1,000 / 10⁶</td><td class="match">Match</td></tr>
+    <tr><td>Emissions</td><td class="num">5 lb</td><td class="num">5 lb</td><td class="num">100 × 0.05</td><td class="match">Match</td></tr>
+    <tr><td rowspan="2">4. Control efficiency<br><span class="small muted">90% capture, 95% destruction</span></td><td>Overall removal</td><td class="num">85.5%</td><td class="num">85.5%</td><td class="num">0.90 × 0.95</td><td class="match">Match</td></tr>
+    <tr><td>Residual</td><td class="num">14.5%</td><td class="num">14.5 lb/day of 100</td><td class="num">1 − 0.855</td><td class="match">Match</td></tr>
+    <tr><td rowspan="6">5. Rule thresholds<br><span class="small muted">as coded in data.js</span></td><td>BACT, 2-2-301</td><td class="num">10 lb, any day</td><td class="num">10 lb/day</td><td class="num">rule text</td><td class="match">Match</td></tr>
+    <tr><td>TBACT cancer, 2-5-301</td><td class="num">&gt;1 per million</td><td class="num">1.0</td><td class="num">rule text</td><td class="match">Match</td></tr>
+    <tr><td>TBACT chronic HI</td><td class="num">&gt;0.20</td><td class="num">0.20</td><td class="num">rule text</td><td class="match">Match</td></tr>
+    <tr><td>Project cancer, 2-5-302</td><td class="num">10 per million</td><td class="num">10</td><td class="num">rule text</td><td class="match">Match</td></tr>
+    <tr><td>Project cancer, Overburdened Community</td><td class="num">6 per million</td><td class="num">6</td><td class="num">rule text</td><td class="match">Match</td></tr>
+    <tr><td>Project acute and chronic HI</td><td class="num">1.0 each</td><td class="num">1.0</td><td class="num">rule text</td><td class="match">Match</td></tr>
+  </tbody>
+</table>
+
+<h3>Common pitfalls, and how the tool handles them</h3>
+<table>
+  <thead><tr><th style="width:44%">Pitfall</th><th>Tool</th></tr></thead>
+  <tbody>
+    <tr><td>"An annual-hours limit does not automatically reduce the maximum daily rate."</td><td>Daily values use hours per day; annual hours only change lb/yr. The boiler shows 12 lb/day at 2,000 hr/yr.</td></tr>
+    <tr><td>"Evaluate BACT applicability; the arithmetic alone does not establish the full regulatory result."</td><td>Flags BACT for boiler NOx (12 lb/day) and generator NOx and CO, citing 2-2-301.</td></tr>
+    <tr><td>"Do not substitute electrical kW for mechanical hp without the appropriate conversion."</td><td>A rating unit menu converts kWe through generator efficiency: 400 kWe ÷ 0.95 ÷ 0.7457 = 564.6 bhp.</td></tr>
+    <tr><td>"Residual emissions are 14.5%, not 5%. Never apply an efficiency twice."</td><td>Overall control is capture × device efficiency; a second device acts only on the captured stream, so control never exceeds capture.</td></tr>
+    <tr><td>"Match gas reference conditions."</td><td>The flare uses 379.5 scf/lb-mol at 60 °F; Method 19 uses 385.3 at 68 °F. Both are stated in the trail.</td></tr>
+    <tr><td>HRA chain: emissions → dispersion → concentration → exposure and toxicity → risk.</td><td>The toxics page follows that chain step by step (see example 6).</td></tr>
+  </tbody>
+</table>
+
+<div class="keep pb"><h2>Example 1: boiler</h2>
+<div class="two">
+  <div>
+    <p><b>Inputs:</b> 5 MMBtu/hr, NOx 0.10 lb/MMBtu, 24 hr/day, 2,000 hr/yr, natural gas.</p>
+    <p><b>Worked answer:</b> 0.50 lb/hr; 12 lb/day; 1,000 lb/yr = 0.50 tons/yr.</p>
+    <p><b>Tool:</b> 0.5 lb/hr; 12 lb/day (orange, at or above the trigger); 1,000 lb/yr; 0.5 ton/yr. Flag: BACT is triggered for NOx under 2-2-301.</p>
+    <p class="small muted">The other pollutants use the AP-42 Section 1.4 defaults, which the example does not set. Open this example: <a href="https://kouroshie.github.io/air-permit-toolkit/#combustion?heat=5&hd=24&hy=2000&NOx=0.10">combustion link</a>.</p>
+  </div>
+  <figure><div class="shot"><img src="img/e1_crop.png" alt="Boiler result"></div><figcaption>Live tool, light theme.</figcaption></figure>
+</div></div>
+
+<div class="keep"><h2>Example 2: diesel generator</h2>
+<div class="two">
+  <div>
+    <p><b>Inputs:</b> 400 bhp, NOx 1.5 g/bhp-hr, 24 hr/day worst case, 50 hr/yr.</p>
+    <p><b>Worked answer:</b> 1.323 lb/hr; 66.1 lb/yr; 0.0331 short tons; 31.75 lb/day if 24-hour operation is possible.</p>
+    <p><b>Tool:</b> 1.323 lb/hr; 66.14 lb/yr; 0.03307 ton/yr; 31.75 lb/day. Flags: BACT for NOx and CO; diesel PM 0.97 lb/yr exceeds the Table 2-5-1 chronic trigger of 0.26 lb/yr, so a Rule 2-5 health risk assessment is required.</p>
+    <p class="small muted">CO, POC, PM and SO2 use the tool's Tier 4 Final defaults, which the example does not set. <a href="https://kouroshie.github.io/air-permit-toolkit/#engine?power=400&pu=bhp&hd=24&hy=50&NOx=1.5">engine link</a>.</p>
+  </div>
+  <figure><div class="shot"><img src="img/e2_crop.png" alt="Generator result"></div></figure>
+</div></div>
+
+<div class="keep"><h2>Example 3: flare</h2>
+<div class="two">
+  <div>
+    <p><b>Inputs:</b> 100 Mscf, 1,000 Btu/scf, NOx factor 0.05 lb/MMBtu.</p>
+    <p><b>Worked answer:</b> 100 MMBtu; 5 lb.</p>
+    <p><b>Tool:</b> heat released 100 MMBtu; NOx 5 lb (1.25 lb/hr over the default 4-hour event). The trail also gives CO, SO2 from H2S and VOC after 98% destruction, from the default composition.</p>
+    <p class="small muted"><a href="https://kouroshie.github.io/air-permit-toolkit/#flare?mscf=100&hhv=1000&noxef=0.05">flare link</a>.</p>
+  </div>
+  <figure><div class="shot"><img src="img/e3_crop.png" alt="Flare result"></div></figure>
+</div></div>
+
+<div class="keep"><h2>Example 4: control efficiency</h2>
+<div class="two">
+  <div>
+    <p><b>Inputs:</b> 100 lb/day uncontrolled, 90% capture, 95% control, no second device.</p>
+    <p><b>Worked answer:</b> 85.5% overall; 14.5% remains.</p>
+    <p><b>Tool:</b> 85.5%; 14.5 lb/day remain.</p>
+    <p><b>One step further:</b> a 90% second device in series gives 0.90 × (1 − 0.05 × 0.10) = <b>89.55%</b>. Before the independent review, the tool returned 98.55%, more than the 90% capture. That was the one real error found, and it is now fixed and tested.</p>
+    <p class="small muted"><a href="https://kouroshie.github.io/air-permit-toolkit/#control?unc=100&cap=90&des=95&sec=0">control link</a>.</p>
+  </div>
+  <figure><div class="shot full"><img src="img/e4_crop.png" alt="Control efficiency result"></div></figure>
+</div></div>
+
+<div class="keep"><h2>Example 5: kilowatts versus horsepower</h2>
+<div class="two">
+  <div>
+    <p>A common error is to swap electrical kW for mechanical hp. Entering the same 400 as <b>kWe</b>:</p>
+    <p><b>Hand check:</b> 400 ÷ 0.95 ÷ 0.7457 = 564.6 bhp.</p>
+    <p><b>Tool:</b> "Engine rating used: 564.6 bhp"; NOx 1.867 lb/hr and 44.81 lb/day, about 41% more than the bhp case.</p>
+    <p class="small muted"><a href="https://kouroshie.github.io/air-permit-toolkit/#engine?power=400&pu=kWe&hd=24&hy=50&NOx=1.5">kWe link</a>.</p>
+  </div>
+  <figure><div class="shot"><img src="img/k1_crop.png" alt="Generator rated in kWe"></div></figure>
+</div></div>
+
+<div class="keep"><h2>Example 6: carrying the generator into toxics</h2>
+<div class="two">
+  <div>
+    <p>The health risk chain, using the generator's diesel PM (0.97 lb/yr, 0.0194 lb/hr).</p>
+    <p><b>Hand check:</b> 0.97 lb/yr × 1.43833×10⁻⁵ = 1.3952×10⁻⁵ g/s; × 360 = 0.005023 µg/m³; × CPF 1.1 × 676.63×10⁻⁶ residential factor = <b>3.738 in a million</b>. Chronic HI = 0.005023 / 5 = 0.001005.</p>
+    <p><b>Tool:</b> 3.738 in a million; chronic HI 0.001005. TBACT required (above 1.0); within the project limit of 10, and of 6 in an Overburdened Community.</p>
+    <p class="small muted">The residential factor equals the District CEQA Health Risk Calculator 5.0 factor (47,364 / 70 × 10⁻⁶). <a href="https://kouroshie.github.io/air-permit-toolkit/#toxics?t0=dpm&y0=0.97&h0=0.0194&meth=ceqa">toxics link</a>.</p>
+  </div>
+  <figure><div class="shot"><img src="img/t1_crop.png" alt="Toxics result"></div></figure>
+</div></div>
+
+<div class="keep"><h2>Example 7: fees for the generator</h2>
+<div class="two">
+  <div>
+    <p>Fee basis 400 bhp × 7,000 Btu/bhp-hr = 2.8 MMBtu/hr, first TAC source, toxic surcharge.</p>
+    <table>
+      <thead><tr><th>Fee</th><th class="num">Formula</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td>Filing</td><td class="num">flat</td><td class="num">$684.00</td></tr>
+        <tr><td>Initial</td><td class="num">107.28 × 2.8 = 300.38 → min</td><td class="num">$573.00</td></tr>
+        <tr><td>Risk assessment</td><td class="num">684 + 300.38 = 984.38 → min</td><td class="num">$1,379.00</td></tr>
+        <tr><td>Permit to operate</td><td class="num">53.64 × 2.8 = 150.19 → min</td><td class="num">$407.00</td></tr>
+        <tr><td>Toxic surcharge</td><td class="num">10% × 407</td><td class="num">$40.70</td></tr>
+        <tr><td><b>Total</b></td><td></td><td class="num"><b>$3,083.70</b></td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">Tool total: $3,083.70. Rates are Regulation 3 as adopted June 3, 2026, effective July 1, 2026. <a href="https://kouroshie.github.io/air-permit-toolkit/#fees?sched=B&mm=2.8&raf=first&sur=true">fees link</a>.</p>
+  </div>
+  <figure><div class="shot"><img src="img/f1_crop.png" alt="Fees result"></div></figure>
+</div></div>
+
+<h2>Other checks in the automated suite</h2>
+<p>The repository's <span class="mono">tests/verify.mjs</span> runs 50 checks on every change. Besides the examples above, they include:</p>
+<table>
+  <thead><tr><th>Check</th><th class="num">Expected</th><th>Source of the expected value</th></tr></thead>
+  <tbody>
+    <tr><td>Method 19: 9 ppmvd NOx at 3% O2, natural gas</td><td class="num">0.01093 lb/MMBtu</td><td>Hand calculation with F<sub>d</sub> 8,710 (Table 19-2)</td></tr>
+    <tr><td>Residential exposure factor</td><td class="num">equal to CEQA F14 / 70</td><td>Air District Health Risk Calculator 5.0</td></tr>
+    <tr><td>Diesel PM, 1 µg/m³, residential</td><td class="num">744.3 per million</td><td>Same calculator values, CPF 1.1</td></tr>
+    <tr><td>Schedule B minimums, maximums and surcharges</td><td class="num">rule values</td><td>Regulation 3 and the District's engine fee example sheet (9/28/2026)</td></tr>
+    <tr><td>Briggs rural class D sigmas at 1 km</td><td class="num">76 m and 38 m</td><td>Turner (1994), within 25% of the P-G charts</td></tr>
+    <tr><td>Stable plume rise below neutral rise</td><td class="num">32.98 m &lt; 41.19 m</td><td>Briggs formulas in Turner (1994)</td></tr>
+    <tr><td>Bad inputs rejected</td><td class="num">error</td><td>e.g. more hours per year than hours per day × 365</td></tr>
+  </tbody>
+</table>
+
+<div class="foot">Inputs are hypothetical practice values, not approved factors. Screenshots were taken from the public site on November 15, 2026; cropped images fade where the calculation trail continues.</div>
+</body></html>

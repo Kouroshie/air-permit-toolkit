@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Guided tour</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,650&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit.css"></head><body>
+
+<div class="band">
+  <p class="kit">Air Permit Engineering Toolkit · Guided tour</p>
+  <h1>A five-minute tour</h1>
+  <p class="sub">Five stops that show what the toolkit does. Each link opens a calculator with the inputs already filled in, so you can read the result and then change any number.</p>
+  <div class="meta"><span><b>Tool:</b> kouroshie.github.io/air-permit-toolkit</span><span><b>Runs in:</b> any browser, nothing uploaded</span></div>
+</div>
+
+<div class="step"><div class="t">Stop 1<small>Boiler</small></div><div>
+  <h3>The maximum day, not the annual average</h3>
+  <p><a href="https://kouroshie.github.io/air-permit-toolkit/#combustion?heat=5&hd=24&hy=2000&NOx=0.10">Open the boiler example</a>: 5 MMBtu/hr, NOx 0.10 lb/MMBtu, 24 hr/day, 2,000 hr/yr.</p>
+  <p>NOx is 0.5 lb/hr and 0.5 ton/yr, but the boiler can run all day, so the highest day is 12 lb. That is above the 10 lb/day threshold in Regulation 2-2-301, so the page flags BACT for NOx. An annual hours limit lowers the annual total, not the daily one. Scroll down to the <b>Calculation trail</b> to see every step with its units.</p>
+</div></div>
+
+<div class="step"><div class="t">Stop 2<small>Generator</small></div><div>
+  <h3>Units, and two flags at once</h3>
+  <p><a href="https://kouroshie.github.io/air-permit-toolkit/#engine?power=400&pu=bhp&hd=24&hy=50&NOx=1.5">Open the generator example</a>: 400 bhp, NOx 1.5 g/bhp-hr, 50 hr/yr.</p>
+  <p>NOx is 1.323 lb/hr, 31.75 lb on a 24-hour day and 66.1 lb/yr. Two flags appear: BACT for NOx and CO, and diesel particulate at 0.97 lb/yr, above the 0.26 lb/yr chronic trigger in Table 2-5-1, so a Rule 2-5 health risk assessment is needed.</p>
+  <p>Now change <b>Rating unit</b> to <b>Electrical kW (kWe)</b>. The page converts through generator efficiency (400 ÷ 0.95 ÷ 0.7457 = 564.6 bhp) and every value rises by about 41%. Entering kWe as horsepower is a common error.</p>
+</div></div>
+
+<div class="step"><div class="t">Stop 3<small>Toxics</small></div><div>
+  <h3>From pounds per year to cancer risk</h3>
+  <p><a href="https://kouroshie.github.io/air-permit-toolkit/#toxics?t0=dpm&y0=0.97&h0=0.0194&meth=ceqa">Open the toxics example</a>: the generator's diesel PM, 0.97 lb/yr.</p>
+  <p>With the Air District CEQA screening factor (360 µg/m³ per g/s) and the OEHHA 2015 exposure equations, the residential cancer risk is 3.74 in a million: above the TBACT trigger of 1.0 in Rule 2-5-301 and within the project limit of 10 in Rule 2-5-302. Tick <b>Project is in an Overburdened Community</b> and the limit becomes 6. This is a screening estimate; a refined assessment uses AERMOD and HARP 2.</p>
+</div></div>
+
+<div class="step"><div class="t">Stop 4<small>Fees</small></div><div>
+  <h3>Which minimum applies</h3>
+  <p><a href="https://kouroshie.github.io/air-permit-toolkit/#fees?sched=B&mm=2.8&raf=first&sur=true">Open the fee example</a>: the generator's fee basis of 2.8 MMBtu/hr, first toxic source, toxic surcharge.</p>
+  <p>Filing $684, initial $573, risk assessment $1,379, permit to operate $407 and toxic surcharge $40.70, for $3,083.70. For a source this small, each Schedule B fee is set by its minimum, and the trail shows the comparison.</p>
+</div></div>
+
+<div class="step"><div class="t">Stop 5<small>Control</small></div><div>
+  <h3>Capture limits control</h3>
+  <p><a href="https://kouroshie.github.io/air-permit-toolkit/#control?unc=100&cap=90&des=95&sec=0">Open the control example</a>: 90% capture, 95% control.</p>
+  <p>Overall control is 0.90 × 0.95 = 85.5%, so 14.5% remains, not 5%. Type 90 in <b>Second device in series</b>: overall control becomes 89.55%, because the second device only treats what the hood captures. Overall control can never exceed capture efficiency.</p>
+</div></div>
+
+<h2>More to try</h2>
+<table>
+  <thead><tr><th style="width:28%">Page</th><th>Try this</th></tr></thead>
+  <tbody>
+    <tr><td>Unit conversions</td><td>9 ppmvd NOx at 3% O2 on natural gas gives 0.0109 lb/MMBtu (EPA Method 19). Useful for comparing a ppm limit with a lb/MMBtu factor.</td></tr>
+    <tr><td>Flare event</td><td>100 Mscf at 1,000 Btu/scf releases 100 MMBtu; at 0.05 lb/MMBtu that is 5 lb. The trail adds SO2 from H2S and VOC after destruction.</td></tr>
+    <tr><td>BACT and offset triggers</td><td>Click <b>Add to project</b> on the boiler and generator pages, then open this page to see per-source BACT and facility totals against Regulation 2-2-302 and 303.</td></tr>
+    <tr><td>Coating or gasoline dispensing</td><td>Mass balance with capture and control for coatings; CARB 2013 factors and benzene screening for gasoline stations.</td></tr>
+    <tr><td>Any page</td><td><b>Copy worksheet</b> copies the full calculation trail as text. The page address keeps your inputs, so a link reproduces a case.</td></tr>
+  </tbody>
+</table>
+
+<h2>Where to read more</h2>
+<ul>
+  <li><b>Methods:</b> every equation, default and rule version, in <span class="mono">METHODS.md</span> and <a href="https://kouroshie.github.io/air-permit-toolkit/docs/Air_Permit_Toolkit_Methods.pdf">the methods PDF</a>.</li>
+  <li><b>Verification:</b> the tour's numbers with hand checks, in <a href="https://kouroshie.github.io/air-permit-toolkit/docs/Worked_Example_Checks.pdf">Worked_Example_Checks.pdf</a>; 50 automated checks in <span class="mono">tests/verify.mjs</span>.</li>
+  <li><b>Sources:</b> <a href="https://kouroshie.github.io/air-permit-toolkit/docs/Sources.pdf">Sources.pdf</a>. <b>Structure:</b> <a href="https://kouroshie.github.io/air-permit-toolkit/docs/Project_Anatomy.pdf">Project_Anatomy.pdf</a>.</li>
+</ul>
+
+<div class="note warn"><p><b>Limits.</b> A screening and teaching tool. No building downwash, terrain or real weather data, so it cannot replace AERMOD and HARP 2. It does not check prohibitory limits in Regulations 8 and 9, and fees change every July. Independent open-source project, not affiliated with or endorsed by the Bay Area Air District.</p></div>
+
+<div class="foot">Numbers are from the live tool on November 15, 2026. Inputs are hypothetical practice values.</div>
+</body></html>

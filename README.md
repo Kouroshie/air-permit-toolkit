@@ -32,6 +32,13 @@ The Air District publishes a 316-page Permit Handbook, separate Excel spreadshee
 - [METHODS.md](METHODS.md) gives every equation, default and source ([PDF](docs/Air_Permit_Toolkit_Methods.pdf)).
 - `node tests/verify.mjs` runs 50 checks against hand calculations and published values (Method 19, AP-42 examples, the Air District CEQA calculator's exposure factor, the Regulation 3 fee example).
 
+## Guides
+
+- [Guided tour](docs/Guided_Tour.pdf): five stops with links that open each calculator prefilled.
+- [Worked example checks](docs/Worked_Example_Checks.pdf): practice calculations worked by hand and compared with the tool.
+- [Sources](docs/Sources.pdf): the rules, tables, factors and papers behind each value.
+- [Project anatomy](docs/Project_Anatomy.pdf): how the files, data and calculation engine fit together.
+
 ## Limits
 
 This is a screening and teaching tool. Rules and fees change, the dispersion screen is not AERMOD, and default emission factors are generic. Final permit decisions rest on the current rule text and an engineer's review.
@@ -52,6 +59,7 @@ python -m http.server 8000
 - `app.js`: interface and charts
 - `tests/verify.mjs`: verification suite
 - `tools/build_methods_pdf.py`: rebuilds `docs/Air_Permit_Toolkit_Methods.pdf` from `METHODS.md` (`python tools/build_methods_pdf.py`; needs Chrome or Edge, no packages)
+- `docs/src/`, `tools/build_docs_pdf.py`: HTML sources of the guide PDFs and their build script (`python tools/build_docs_pdf.py`)
 
 ## License
 

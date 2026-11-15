@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Project anatomy</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,650&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit.css">
+<style>
+  svg { width: 100%; height: auto; display: block; margin: 6pt 0 4pt; }
+  svg text { font-family: 'Public Sans', 'Segoe UI', sans-serif; fill: #17242d; }
+  svg .t { font-size: 13px; font-weight: 600; }
+  svg .s { font-size: 10.5px; fill: #56666f; }
+  svg .lab { font-size: 10px; fill: #1b5c88; font-weight: 600; }
+  svg .box { fill: #ffffff; stroke: #1b5c88; stroke-width: 1.4; }
+  svg .box.soft { fill: #e3eef6; }
+  svg .box.ok { stroke: #2b7a57; fill: #e1f1e8; }
+  svg .box.grey { stroke: #8a9aa3; fill: #f3f6f7; }
+  svg .ln { stroke: #1b5c88; stroke-width: 1.4; fill: none; marker-end: url(#ar); }
+  svg .ln.g { stroke: #2b7a57; marker-end: url(#arg); }
+</style></head><body>
+
+<div class="band">
+  <p class="kit">Air Permit Engineering Toolkit · Architecture</p>
+  <h1>Anatomy of the project</h1>
+  <p class="sub">How the toolkit is built: the files, how a number travels from an input to a flag, how a project moves through the rules, and how every change is checked before it goes live.</p>
+  <div class="meta"><span><b>Repository:</b> github.com/Kouroshie/air-permit-toolkit</span><span><b>Size:</b> about 1,870 lines of code, data and tests</span><span><b>License:</b> MIT</span></div>
+</div>
+
+<h2>Design choices</h2>
+<ul>
+  <li><b>One page, no installation, no server.</b> Plain HTML, CSS and JavaScript, hosted free on GitHub Pages. It opens on any browser, including a phone.</li>
+  <li><b>Nothing is uploaded.</b> All arithmetic runs in the viewer's browser. Inputs live in the page address (so a link reproduces a case) and the project list lives in the browser's own storage.</li>
+  <li><b>No outside code libraries.</b> Charts are drawn directly, so there is nothing to update or break.</li>
+  <li><b>Math, rule values and interface are kept apart.</b> A fee change edits one data file; an equation lives in one function; the screen never does arithmetic of its own.</li>
+  <li><b>Every function returns its steps.</b> Each calculation returns both the answer and the ordered list of steps with units, which become the calculation trail on screen.</li>
+</ul>
+
+<h2>The three layers</h2>
+<svg viewBox="0 0 720 250" role="img" aria-label="Diagram of data.js, calc.js and app.js">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1b5c88"/></marker>
+    <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b7a57"/></marker>
+  </defs>
+  <rect class="box soft" x="10" y="20" width="210" height="92" rx="6"/>
+  <text class="t" x="24" y="42">data.js  · rule values</text>
+  <text class="s" x="24" y="61">BACT and offset thresholds</text>
+  <text class="s" x="24" y="76">Rule 2-5 limits, 20 contaminants</text>
+  <text class="s" x="24" y="91">CARB station factors, Reg 3 fees</text>
+  <text class="s" x="24" y="106">80 lines</text>
+
+  <rect class="box" x="255" y="20" width="210" height="92" rx="6"/>
+  <text class="t" x="269" y="42">calc.js  · engineering math</text>
+  <text class="s" x="269" y="61">20 exported functions, no screen code</text>
+  <text class="s" x="269" y="76">each returns { out, steps }</text>
+  <text class="s" x="269" y="91">AP-42, Method 19, GHG constants</text>
+  <text class="s" x="269" y="106">389 lines</text>
+
+  <rect class="box" x="500" y="20" width="210" height="92" rx="6"/>
+  <text class="t" x="514" y="42">app.js  · interface</text>
+  <text class="s" x="514" y="61">11 calculators in 3 groups</text>
+  <text class="s" x="514" y="76">flags, table, chart, trail</text>
+  <text class="s" x="514" y="91">project list, copy worksheet</text>
+  <text class="s" x="514" y="106">627 lines</text>
+
+  <path class="ln" d="M220,58 H253"/>
+  <text class="lab" x="224" y="52">fees</text>
+  <path class="ln" d="M465,58 H498"/>
+  <text class="lab" x="466" y="52">steps</text>
+  <path class="ln" d="M115,112 V136 H560 V114"/>
+  <text class="lab" x="300" y="131">thresholds that set the flags</text>
+
+  <rect class="box grey" x="255" y="165" width="210" height="62" rx="6"/>
+  <text class="t" x="269" y="187">index.html + style.css</text>
+  <text class="s" x="269" y="205">page shell; loads calc, data, app</text>
+  <text class="s" x="269" y="219">light and dark themes, phone layout</text>
+
+  <rect class="box grey" x="500" y="165" width="210" height="62" rx="6"/>
+  <text class="t" x="514" y="187">Browser state</text>
+  <text class="s" x="514" y="205">address bar: inputs, shareable link</text>
+  <text class="s" x="514" y="219">local storage: project sources</text>
+  <path class="ln" d="M650,112 V163"/>
+</svg>
+<p class="small muted">Example: on the generator page, app.js reads the inputs, calc.js computes 1.323 lb/hr and returns each step, and app.js compares 31.75 lb/day with the 10 lb/day threshold from data.js to raise the BACT flag.</p>
+
+<h2>How a project moves through the rules</h2>
+<svg viewBox="0 0 720 182" role="img" aria-label="Review flow from emission calculators to fees">
+  <rect class="box soft" x="10" y="20" width="150" height="114" rx="6"/>
+  <text class="t" x="22" y="42">Estimate emissions</text>
+  <text class="s" x="22" y="61">Boiler, heater, turbine</text>
+  <text class="s" x="22" y="76">Diesel engine, generator</text>
+  <text class="s" x="22" y="91">Flare event</text>
+  <text class="s" x="22" y="106">Coating, solvent</text>
+  <text class="s" x="22" y="121">Gasoline dispensing</text>
+  <path class="ln" d="M160,77 H212"/>
+  <text class="lab" x="186" y="68" text-anchor="middle">Add to</text>
+  <text class="lab" x="186" y="93" text-anchor="middle">project</text>
+
+  <rect class="box" x="214" y="20" width="150" height="114" rx="6"/>
+  <text class="t" x="226" y="42">BACT and offsets</text>
+  <text class="s" x="226" y="61">Regulation 2, Rule 2</text>
+  <text class="s" x="226" y="76">10 lb/day per source</text>
+  <text class="s" x="226" y="91">facility tpy vs 302, 303</text>
+  <path class="ln" d="M364,77 H386"/>
+
+  <rect class="box" x="388" y="20" width="150" height="114" rx="6"/>
+  <text class="t" x="400" y="42">Toxics and risk</text>
+  <text class="s" x="400" y="61">Regulation 2, Rule 5</text>
+  <text class="s" x="400" y="76">Table 2-5-1 triggers</text>
+  <text class="s" x="400" y="91">dispersion, OEHHA risk</text>
+  <text class="s" x="400" y="106">TBACT, project limits</text>
+  <path class="ln" d="M538,77 H560"/>
+
+  <rect class="box" x="562" y="20" width="148" height="114" rx="6"/>
+  <text class="t" x="574" y="42">Permit fees</text>
+  <text class="s" x="574" y="61">Regulation 3</text>
+  <text class="s" x="574" y="76">Schedules B and D</text>
+  <text class="s" x="574" y="91">surcharges, notice</text>
+
+  <rect class="box grey" x="214" y="146" width="496" height="28" rx="6"/>
+  <text class="s" x="226" y="164">Check the math any time: unit conversions, control efficiency, methods and sources</text>
+</svg>
+
+<h2>Anatomy of one result</h2>
+<div class="two">
+  <div>
+    <p>Every calculator page has the same parts, top to bottom:</p>
+    <table>
+      <tbody>
+        <tr><td style="width:34%"><b>Flags</b></td><td>Plain-language findings with the rule cited: orange when a requirement is triggered, blue for information, red when a limit is exceeded.</td></tr>
+        <tr><td><b>Results table</b></td><td>Every pollutant in lb/hr, lb/day, lb/yr and ton/yr. Values at or above a threshold are highlighted.</td></tr>
+        <tr><td><b>Chart</b></td><td>The highest day per pollutant against the BACT line, or concentration against distance on the toxics page.</td></tr>
+        <tr><td><b>Calculation trail</b></td><td>Each step numbered, with the arithmetic and units, so it can be repeated by hand.</td></tr>
+        <tr><td><b>Sources and assumptions</b></td><td>The rule, table or document each default comes from.</td></tr>
+        <tr><td><b>Buttons</b></td><td><i>Add to project</i> carries the source into the rule checks; <i>Copy worksheet</i> copies the trail as text for a report; <i>Reset</i> restores defaults.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure><div class="shot"><img src="img/e2_crop.png" alt="Generator result page"></div><figcaption>Generator page, live site.</figcaption></figure>
+</div>
+
+<h2>Files</h2>
+<table>
+  <thead><tr><th>File</th><th class="num">Lines</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">calc.js</td><td class="num">389</td><td>All engineering functions: oxygen correction, ppm to lb/MMBtu, combustion, engine, flare, coating, control efficiency, Briggs dispersion and plume rise, residential and worker risk, Schedule B and D fees. Runs in the browser and in Node.js.</td></tr>
+    <tr><td class="mono">data.js</td><td class="num">80</td><td>Rule values with their sources: NSR thresholds, CEQA chi/Q, Rule 2-5 limits, 20 toxic contaminants, gasoline factors, Regulation 3 fees.</td></tr>
+    <tr><td class="mono">app.js</td><td class="num">627</td><td>The 11 calculator pages, worksheet rendering, charts, project list and shareable links.</td></tr>
+    <tr><td class="mono">index.html, style.css</td><td class="num">185</td><td>Page shell, typography, color themes and the phone layout.</td></tr>
+    <tr><td class="mono">tests/verify.mjs</td><td class="num">136</td><td>50 automated checks against hand calculations and published values.</td></tr>
+    <tr><td class="mono">METHODS.md</td><td class="num">248</td><td>The methods paper: every equation, default, rule version and reference.</td></tr>
+    <tr><td class="mono">tools/build_methods_pdf.py</td><td class="num">123</td><td>Rebuilds the methods PDF from METHODS.md.</td></tr>
+    <tr><td class="mono">docs/</td><td class="num"></td><td>Methods PDF (version 1.1) and the README screenshot.</td></tr>
+    <tr><td class="mono">README.md, LICENSE</td><td class="num">79</td><td>Overview, how to run locally, MIT license.</td></tr>
+  </tbody>
+</table>
+
+<h2>The 11 calculators</h2>
+<table>
+  <thead><tr><th>Group</th><th>Page</th><th>Main function</th><th>Rule or method</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="5">Estimate emissions</td><td>Boiler, heater or turbine</td><td class="mono">combustion</td><td>AP-42 1.4; 40 CFR 98 Subpart C</td></tr>
+    <tr><td>Diesel engine or generator</td><td class="mono">engine</td><td>Certified g/bhp-hr; Tier 4 defaults; kWe conversion</td></tr>
+    <tr><td>Flare event</td><td class="mono">flare</td><td>AP-42 13.5; molar volume; DRE</td></tr>
+    <tr><td>Coating or solvent use</td><td class="mono">coating</td><td>Permit Handbook 5.1 mass balance</td></tr>
+    <tr><td>Gasoline dispensing</td><td>in app.js</td><td>CARB 2013 EVR factors; benzene</td></tr>
+    <tr><td rowspan="3">Review the project</td><td>BACT and offset triggers</td><td>in app.js</td><td>Regulation 2-2-301, 302, 303</td></tr>
+    <tr><td>Toxics screening and risk</td><td class="mono">dispersion, riskFromConc</td><td>Rule 2-5; CEQA calculator; OEHHA 2015; Turner 1994</td></tr>
+    <tr><td>Permit fees</td><td class="mono">feesScheduleB, feesScheduleD</td><td>Regulation 3, FY 2026-27</td></tr>
+    <tr><td rowspan="3">Check the math</td><td>Unit conversions</td><td class="mono">concConvert</td><td>EPA Method 19</td></tr>
+    <tr><td>Control efficiency</td><td class="mono">controlEff</td><td>Capture × control train</td></tr>
+    <tr><td>Methods and sources</td><td>in app.js</td><td>What the District already publishes; references</td></tr>
+  </tbody>
+</table>
+
+<h2 class="pb">How a change goes live</h2>
+<svg viewBox="0 0 720 150" role="img" aria-label="Build and check pipeline">
+  <rect class="box" x="10" y="15" width="155" height="56" rx="6"/>
+  <text class="t" x="22" y="37">Edit code or data</text>
+  <text class="s" x="22" y="55">calc.js, data.js, app.js</text>
+  <path class="ln" d="M165,43 H195"/>
+  <rect class="box ok" x="197" y="15" width="165" height="56" rx="6"/>
+  <text class="t" x="209" y="37">Run 50 checks</text>
+  <text class="s" x="209" y="55">node tests/verify.mjs</text>
+  <path class="ln g" d="M362,43 H392"/>
+  <text class="lab" x="364" y="35" style="fill:#2b7a57">pass</text>
+  <rect class="box" x="394" y="15" width="145" height="56" rx="6"/>
+  <text class="t" x="406" y="37">Push to GitHub</text>
+  <text class="s" x="406" y="55">main branch</text>
+  <path class="ln" d="M539,43 H569"/>
+  <rect class="box soft" x="571" y="15" width="139" height="56" rx="6"/>
+  <text class="t" x="583" y="37">Live in a minute</text>
+  <text class="s" x="583" y="55">GitHub Pages</text>
+
+  <rect class="box grey" x="10" y="88" width="155" height="52" rx="6"/>
+  <text class="t" x="22" y="109">METHODS.md</text>
+  <text class="s" x="22" y="127">equations, sources</text>
+  <path class="ln" d="M165,114 H195"/>
+  <rect class="box grey" x="197" y="88" width="165" height="52" rx="6"/>
+  <text class="t" x="209" y="109">build_methods_pdf.py</text>
+  <text class="s" x="209" y="127">headless Chrome print</text>
+  <path class="ln" d="M362,114 H392"/>
+  <rect class="box grey" x="394" y="88" width="145" height="52" rx="6"/>
+  <text class="t" x="406" y="109">Methods PDF</text>
+  <text class="s" x="406" y="127">docs/, shareable link</text>
+</svg>
+
+<h3>Every July, when Regulation 3 fees change</h3>
+<ol>
+  <li>Edit the <span class="mono">fees</span> block in <span class="mono">data.js</span> (one place; calc.js reads it when it runs).</li>
+  <li>Update the expected fee values in <span class="mono">tests/verify.mjs</span> and run the checks.</li>
+  <li>Update the fee table in <span class="mono">METHODS.md</span>, rebuild the PDF, and push.</li>
+</ol>
+
+<h2>Review history</h2>
+<p>The repository history shows how the tool was checked and corrected on November 15, 2026:</p>
+<table>
+  <thead><tr><th>Time</th><th>Commit</th><th>Change</th></tr></thead>
+  <tbody>
+    <tr><td>10:35</td><td class="mono">e33d4dc</td><td>First release: emissions, NSR triggers, Rule 2-5 screening, Regulation 3 fees, methods, 44 checks</td></tr>
+    <tr><td>10:41</td><td class="mono">065fae5</td><td>Code review fixes: stable plume rise, peak-hour benzene for gas stations, one breathing rate matching the CEQA calculator, fees moved to data.js</td></tr>
+    <tr><td>11:00</td><td class="mono">d66faad</td><td>Deep Review fixes: a second control device now treats only the captured stream; methods paper expanded</td></tr>
+    <tr><td>11:02</td><td class="mono">5cb7624</td><td>Methods paper version 1.1 and PDF</td></tr>
+    <tr><td>11:05</td><td class="mono">8844a00, 5420944</td><td>PDF build script; README links</td></tr>
+    <tr><td>11:12</td><td class="mono">098a05b</td><td>Unit wording on the toxics page</td></tr>
+  </tbody>
+</table>
+
+<h2>What it deliberately does not do</h2>
+<ul>
+  <li>Refined dispersion: no building downwash, terrain or real weather data. AERMOD and HARP 2 do that.</li>
+  <li>Prohibitory rules in Regulations 8 and 9, modified-source baseline tests, banked credits, PSD.</li>
+  <li>Schedule E (solvents) and G (flares) fees, and small or green business fee reductions.</li>
+  <li>Permit decisions. It is a screening and teaching tool, independent of the Air District.</li>
+</ul>
+
+<div class="foot">Line counts and commits are from the repository on November 15, 2026.</div>
+</body></html>
