@@ -29,7 +29,7 @@ The Air District publishes a 316-page Permit Handbook, separate Excel spreadshee
 
 ## Methods and verification
 
-- [METHODS.md](METHODS.md) gives every equation, default and source.
+- [METHODS.md](METHODS.md) gives every equation, default and source ([PDF](docs/Air_Permit_Toolkit_Methods.pdf)).
 - `node tests/verify.mjs` runs 50 checks against hand calculations and published values (Method 19, AP-42 examples, the Air District CEQA calculator's exposure factor, the Regulation 3 fee example).
 
 ## Limits
