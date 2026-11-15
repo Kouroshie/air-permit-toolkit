@@ -103,7 +103,7 @@ Total organic gas is estimated from throughput with the CARB (2013) factors for 
 | Spillage | 0.24 |
 | Hose permeation (2017 value) | 0.009 |
 
-The refueling factor is weighted by the share of gallons dispensed to vehicles with onboard refueling vapor recovery (default 90%). The benzene fraction is a user input (default 0.003 by weight). The Air District uses an internal spreadsheet based on CARB factors (Permit Handbook Chapter 3.2), and its CEQA page directs gas-station risk screening to the CARB Gas Station Risk Assessment Screening Tool, so results from this calculator are approximate.
+The refueling factor is weighted by the share of gallons dispensed to vehicles with onboard refueling vapor recovery (default 90%). The benzene fraction is a user input (default 0.003 by weight). Annual benzene is compared with the chronic trigger level. Peak-hour benzene is computed from a separate maximum hourly throughput input (default 1,000 gal/hr) and compared with the acute trigger level, because averaging annual throughput over 8,760 hours would understate the hourly peak. The Air District uses an internal spreadsheet based on CARB factors (Permit Handbook Chapter 3.2), and its CEQA page directs gas-station risk screening to the CARB Gas Station Risk Assessment Screening Tool, so results from this calculator are approximate.
 
 ### 4.7 Control efficiency
 
@@ -156,7 +156,7 @@ The emission rate is converted to grams per second (lb/yr x 1.43833E-05, or lb/h
 
    chi/Q = 10^6 / (pi u sigma_y sigma_z) x exp(-H^2 / (2 sigma_z^2)) (ug/m3 per g/s)
 
-   with the Briggs dispersion coefficients for urban or rural conditions as tabulated by Turner (1994). Distance is scanned on a log grid from 10 m to 10 km, and the toolkit uses the larger of the value at the receptor distance and the maximum beyond it. The annual value is 0.1 times the 1-hour maximum, the annual scaling factor in EPA AERSCREEN guidance. The effective height H is the stack height, optionally increased by Briggs final buoyant plume rise: F = g v_s d^2 (T_s - T_a) / (4 T_s), with Delta h = 21.425 F^0.75 / u for F < 55 m^4/s^3 and 38.71 F^0.6 / u otherwise.
+   with the Briggs dispersion coefficients for urban or rural conditions as tabulated by Turner (1994). Distance is scanned on a log grid from 10 m to 10 km, and the toolkit uses the larger of the value at the receptor distance and the maximum beyond it. The annual value is 0.1 times the 1-hour maximum, the annual scaling factor in EPA AERSCREEN guidance. The effective height H is the stack height, optionally increased by Briggs final buoyant plume rise: F = g v_s d^2 (T_s - T_a) / (4 T_s), with Delta h = 21.425 F^0.75 / u for F < 55 m^4/s^3 and 38.71 F^0.6 / u otherwise. For stable classes E and F the stable formula Delta h = 2.6 (F / (u s))^(1/3) is used, with s = (g / T_a) x 0.020 for class E and 0.035 for class F (potential temperature gradients in K/m), capped at the neutral value.
 
 The 1-hour concentration for the acute hazard index always comes from the plume calculation.
 
@@ -171,9 +171,9 @@ Risk = C x CPF x sum_k (DBR_k x ASF_k x ED_k x FAH_k) x EF x 10^-6 / AT
 | Third trimester | 361 | 10 | 0.25 | 1.0 |
 | 0 to 2 years | 1,090 | 10 | 2 | 1.0 |
 | 2 to 16 years | 572 | 3 | 14 | 1.0 |
-| 16 to 30 years | 233 or 261 | 1 | 14 | 0.73 |
+| 16 to 30 years | 261 | 1 | 14 | 0.73 |
 
-EF = 350/365 and AT = 70 years. The first two breathing rates are 95th percentile values; the 2 to 16 rate is the 80th percentile. For ages 16 to 30 the user can choose 233 L/kg-day (OEHHA 80th percentile for ages 16 to 30) or 261 L/kg-day, the value in the Air District CEQA calculator. The two choices change total risk by about 0.6%. With 233 L/kg-day, 1 ug/m3 of diesel PM gives a residential risk of 740 in a million.
+EF = 350/365 and AT = 70 years. The first two breathing rates are 95th percentile values; the 2 to 16 rate is the 80th percentile. For ages 16 to 30 the toolkit uses 261 L/kg-day, the value in the Air District CEQA Health Risk Calculator 5.0, so its residential factor matches that calculator exactly. (OEHHA lists 233 L/kg-day as the 80th percentile for this group; the difference changes total risk by about 0.6%.) With these values, 1 ug/m3 of diesel PM gives a residential cancer risk of about 744 in a million.
 
 Worker risk uses an 8-hour breathing rate of 230 L/kg, 250 days per year, 25 years and a worker adjustment factor of 1. The chronic hazard index is the annual concentration divided by the chronic REL. The acute hazard index is the 1-hour concentration divided by the acute REL. Indices are summed across contaminants without separating toxicological endpoints, which is conservative.
 
@@ -202,7 +202,7 @@ These values were checked against the adopted rule (June 3, 2026), the May 2026 
 
 ## 8. Verification
 
-`tests/verify.mjs` runs 44 checks in Node.js against hand calculations and published values, including:
+`tests/verify.mjs` runs 48 checks in Node.js against hand calculations and published values, including:
 
 - Method 19 conversion of 9 ppmvd NOx at 3% O2: 0.0109 lb/MMBtu
 - Boiler at 5 MMBtu/hr and 0.10 lb/MMBtu: 0.50 lb/hr, 12 lb/day and 0.50 tons per year at 2,000 hours

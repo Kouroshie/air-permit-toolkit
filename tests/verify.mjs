@@ -78,12 +78,12 @@ near('Coating controlled lb/yr', co.out.ctl, 3000 * 0.145);
 // 9. Risk: residential factor equals the BAAQMD CEQA Health Risk Calculator 5.0 factor / 70 when the adult rate is 261
 {
   const ceqaF14 = (361 * 10 * 1 * 0.25 + 1090 * 10 * 1 * 2 + 572 * 3 * 1 * 14 + 261 * 1 * 0.73 * 14) * (350 / 365);
-  const mine261 = (361 * 10 * 0.25 + 1090 * 10 * 2 + 572 * 3 * 14 + 261 * 14 * 0.73) * (350 / 365) * 1e-6 / 70;
-  near('Residential factor matches CEQA calculator (261)', mine261, ceqaF14 * 1e-6 / 70);
-  // Diesel PM: 1 ug/m3 x CPF 1.1 -> about 740 in a million (233) residential
+  near('Residential factor equals the CEQA calculator factor (F14 / 70)', A.residentFactor(), ceqaF14 * 1e-6 / 70);
+  // Diesel PM: 1 ug/m3 x CPF 1.1 -> 744 in a million residential
   const r = A.riskFromConc({ annualConc: 1, cpf: 1.1 });
-  near('DPM 1 ug/m3 residential risk (233)', r.out.resRisk, 1.1 * A.residentFactor() * 1e6);
-  truthy(`DPM 1 ug/m3 residential risk is in the 700s per million (${r.out.resRisk.toFixed(0)})`, r.out.resRisk > 700 && r.out.resRisk < 760);
+  near('DPM 1 ug/m3 residential risk', r.out.resRisk, 1.1 * ceqaF14 / 70);
+  // CEQA calculator method for 0.0631 lb/day DPM: lb/day x 1.43833e-5 x 360 x F14 x CPF / 70 x 365 (/1000/1000 x 1e6)
+  near('Matches CEQA calculator formula for 0.0631 lb/day DPM', 0.0631 * 365 * 1.43833e-5 * 360 * 1.1 * A.residentFactor() * 1e6, 0.0631 * 1.43833e-5 * 360 * ceqaF14 * 1.1 / 70 * 365, 1e-5);
   // The CEQA calculator converts lb/yr to g/s with 1.43833e-5
   near('lb/yr -> g/s constant', 453.592 / (8760 * 3600), 1.43833e-5, 1e-4);
 }
@@ -116,6 +116,18 @@ let threw = false; try { A.combustion({ heatInput: -1, hrsDay: 24, hrsYr: 10, fa
 truthy('Negative heat input is rejected', threw);
 threw = false; try { A.combustion({ heatInput: 1, hrsDay: 8, hrsYr: 8760, factors: {} }); } catch (e) { threw = true; }
 truthy('Hours per year above hours/day x 365 is rejected', threw);
+threw = false; try { A.engine({ power: 100, powerUnit: 'bhp', hrsDay: 1, hrsYr: 8760, factors: {} }); } catch (e) { threw = true; }
+truthy('Engine: hours per year above hours/day x 365 is rejected', threw);
+
+// 13. Plume rise: stable classes use the stable formula and give a lower rise than neutral
+{
+  const F = 9.807 * 40 * 0.04 * (750 - 293) / (4 * 750);
+  const neutral = 21.425 * Math.pow(F, 0.75) / 1;
+  const stableF = 2.6 * Math.pow(F / (1 * 9.807 / 293 * 0.035), 1 / 3);
+  near('Briggs neutral rise class D', A.plumeRiseBriggs(40, 0.2, 750, 293, 1, 'D'), neutral);
+  near('Briggs stable rise class F', A.plumeRiseBriggs(40, 0.2, 750, 293, 1, 'F'), Math.min(stableF, neutral));
+  truthy('Stable rise is below neutral rise for the default stack', A.plumeRiseBriggs(40, 0.2, 750, 293, 1, 'F') < neutral);
+}
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

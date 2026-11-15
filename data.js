@@ -69,6 +69,9 @@
     },
 
     fees: {
+      filing: 684,
+      B: { initRate: 107.28, initMin: 573, initMax: 200137, rafBase: 684, rafRate: 107.28, rafMin1: 1379, rafMinAdd: 573, rafMax: 200137, ptoRate: 53.64, ptoMin: 407, ptoMax: 100069 },
+      D: { init: 378.10, pto: 144.82, modRate: 522.91 },
       publicNotice: 2272, obcHra: 1000,
       source: 'Regulation 3 Fees, FY 2026-27 (effective July 1, 2026): 3-302 filing fee $684; Schedule B initial $107.28 per MMBtu/hr (min $573, max $200,137), risk assessment fee $684 + $107.28 per MMBtu/hr for the first TAC source (min $1,379) or $107.28 per MMBtu/hr for each additional (min $573), permit to operate $53.64 per MMBtu/hr (min $407, max $100,069), toxic surcharge 10% of the PTO fee; Schedule D $378.10 initial and $144.82 PTO per nozzle-product. Cross-checked against the Air District "Example Engine Permit Fees" sheet updated September 28, 2026. Public notice: minimum $2,272 invoice, plus $1,000 for an HRA in an Overburdened Community.',
     },

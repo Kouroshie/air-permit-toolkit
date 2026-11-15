@@ -147,7 +147,7 @@
     const mmbtuYr = H * hy;
     const co2 = mmbtuYr * g.CO2 / 1000, ch4 = mmbtuYr * g.CH4 / 1000, n2o = mmbtuYr * g.N2O / 1000;
     const co2e = step(steps, 'Greenhouse gases (metric tons CO2e/yr)',
-      `${fmt(mmbtuYr)} MMBtu x (${g.CO2} + ${g.CH4} x 34 + ${g.N2O} x 298) kg / 1,000`,
+      `${fmt(mmbtuYr)} MMBtu x (${g.CO2} + ${g.CH4} x ${DATA.ghg.gwp.CH4} + ${g.N2O} x ${DATA.ghg.gwp.N2O}) kg / 1,000`,
       co2 + ch4 * DATA.ghg.gwp.CH4 + n2o * DATA.ghg.gwp.N2O, 'MT CO2e/yr');
     return { out: { rows, co2, ch4, n2o, co2e, ghgFee: co2e * DATA.ghg.feePerMT }, steps };
   }
@@ -174,6 +174,7 @@
     }
     const hd = clamp(nonneg(p.hrsDay, 'Hours per day'), 0, 24);
     const hy = clamp(nonneg(p.hrsYr, 'Hours per year'), 0, 8760);
+    if (hy > hd * 365 + 1e-9) throw new Error('Hours per year cannot exceed hours per day x 365.');
     const rows = [];
     for (const [pol, ef] of Object.entries(p.factors)) {
       const f = nonneg(ef, pol + ' factor');
@@ -187,8 +188,9 @@
     const bsfc = Number(p.bsfc) > 0 ? Number(p.bsfc) : 7000;
     const mmbtuYr = step(steps, 'Annual fuel heat input', `${fmt(bhp)} bhp x ${bsfc} Btu/bhp-hr x ${hy} hr / 1e6`, bhp * bsfc * hy / 1e6, 'MMBtu/yr');
     const g = DATA.ghg.fuels['Distillate fuel oil No. 2'];
-    const co2e = step(steps, 'Greenhouse gases', `${fmt(mmbtuYr)} x (${g.CO2} + ${g.CH4} x 34 + ${g.N2O} x 298) / 1,000`,
-      mmbtuYr * (g.CO2 + g.CH4 * 34 + g.N2O * 298) / 1000, 'MT CO2e/yr');
+    const W = DATA.ghg.gwp;
+    const co2e = step(steps, 'Greenhouse gases', `${fmt(mmbtuYr)} x (${g.CO2} + ${g.CH4} x ${W.CH4} + ${g.N2O} x ${W.N2O}) / 1,000`,
+      mmbtuYr * (g.CO2 + g.CH4 * W.CH4 + g.N2O * W.N2O) / 1000, 'MT CO2e/yr');
     return { out: { bhp, rows, mmbtuYr, co2e }, steps };
   }
 
@@ -247,11 +249,18 @@
   };
   function sigma(c, x) { return c[0] * x * Math.pow(1 + c[1] * x, c[2]); }
 
-  // Briggs plume rise (buoyancy dominated), final rise, used only when the user opts in.
-  function plumeRiseBriggs(vs, d, Ts, Ta, u) {
+  // Briggs final plume rise (buoyancy dominated), used only when the user opts in.
+  // Classes A to D: unstable-neutral formula. Classes E and F: stable formula dh = 2.6 (F / (u s))^(1/3),
+  // s = (g / Ta) dtheta/dz with dtheta/dz = 0.020 K/m (E) and 0.035 K/m (F), as in EPA SCREEN3.
+  function plumeRiseBriggs(vs, d, Ts, Ta, u, cls) {
     if (Ts <= Ta) return 0;
     const F = 9.807 * vs * d * d * (Ts - Ta) / (4 * Ts);
-    return F < 55 ? 21.425 * Math.pow(F, 0.75) / u : 38.71 * Math.pow(F, 0.6) / u;
+    const neutral = F < 55 ? 21.425 * Math.pow(F, 0.75) / u : 38.71 * Math.pow(F, 0.6) / u;
+    if (cls === 'E' || cls === 'F') {
+      const s = 9.807 / Ta * (cls === 'E' ? 0.020 : 0.035);
+      return Math.min(2.6 * Math.pow(F / (u * s), 1 / 3), neutral);
+    }
+    return neutral;
   }
 
   // Concentration per unit emission (ug/m3 per g/s) at downwind distance x (m).
@@ -269,8 +278,8 @@
     const terrain = p.terrain || 'urban';
     let dh = 0;
     if (p.plumeRise) {
-      dh = plumeRiseBriggs(nonneg(p.vs, 'Exit velocity'), nonneg(p.diam, 'Stack diameter'), nonneg(p.Ts, 'Exit temperature'), nonneg(p.Ta || 293, 'Ambient temperature'), u);
-      step(steps, 'Briggs final plume rise (buoyancy)', 'F = g vs d^2 (Ts - Ta) / (4 Ts); dh = 21.425 F^0.75 / u (F < 55) or 38.71 F^0.6 / u', dh, 'm');
+      dh = plumeRiseBriggs(nonneg(p.vs, 'Exit velocity'), nonneg(p.diam, 'Stack diameter'), nonneg(p.Ts, 'Exit temperature'), nonneg(p.Ta || 293, 'Ambient temperature'), u, cls);
+      step(steps, 'Briggs final plume rise (buoyancy)', (cls === 'E' || cls === 'F') ? 'F = g vs d^2 (Ts - Ta) / (4 Ts); stable: dh = 2.6 (F / (u s))^(1/3)' : 'F = g vs d^2 (Ts - Ta) / (4 Ts); dh = 21.425 F^0.75 / u (F < 55) or 38.71 F^0.6 / u', dh, 'm');
     }
     const H = step(steps, 'Effective release height', `${hs} m + ${fmt(dh)} m`, hs + dh, 'm');
     const Qgs = nonneg(p.lbhr, 'Emission rate') * K.G_PER_LB / 3600;
@@ -294,19 +303,20 @@
   }
 
   // ---------- 8. Cancer risk and hazard index (OEHHA 2015 method) ----------
-  // Residential: BAAQMD Air Toxics NSR HRA Guidelines (2016) use 95th percentile breathing rates for
-  // the third trimester and ages 0-2, 80th percentile for ages 2-16 and 16-30; ASF 10, 10, 3, 1;
-  // FAH 1.0 below age 16 and 0.73 for 16-30; EF 350/365; AT 70 years; 30-year exposure.
+  // Residential exposure factors as used in the Air District CEQA Health Risk Calculator 5.0 (OEHHA 2015 method):
+  // breathing rates 361, 1,090, 572 and 261 L/kg-day; ASF 10, 10, 3, 1; fraction of time at home 1.0 below
+  // age 16 and 0.73 for 16-30; EF 350/365; AT 70 years; 30-year exposure.
   const RESIDENT_BINS = [
     { bin: 'Third trimester', DBR: 361, ASF: 10, ED: 0.25, FAH: 1.0 },
     { bin: 'Age 0 to 2', DBR: 1090, ASF: 10, ED: 2, FAH: 1.0 },
     { bin: 'Age 2 to 16', DBR: 572, ASF: 3, ED: 14, FAH: 1.0 },
-    { bin: 'Age 16 to 30', DBR: 233, ASF: 1, ED: 14, FAH: 0.73 },
+    { bin: 'Age 16 to 30', DBR: 261, ASF: 1, ED: 14, FAH: 0.73 },
   ];
   // Unit residential risk: chances per million per (ug/m3 x CPF).
   function residentFactor() {
     let s = 0;
     for (const b of RESIDENT_BINS) s += b.DBR * b.ASF * b.ED * b.FAH;
+    // (sum over age bins) x EF x 1e-6 / AT
     return s * (350 / 365) * 1e-6 / 70; // multiply by C (ug/m3) and CPF (mg/kg-day)^-1 -> risk
   }
   // Worker: 8-hour breathing rate 230 L/kg-8hr, 250 days/yr, 25 years, ASF 1, WAF 1 (source operates when worker present).
@@ -329,19 +339,18 @@
   }
 
   // ---------- 9. Regulation 3 fees ----------
-  // Values set from BAAQMD Regulation 3 (see FEES.source). Rounded to cents.
-  const FEES = {
-    source: 'BAAQMD Regulation 3 Fees (current amendment). Section 3-302 filing fee; Schedule B Combustion of Fuel; Schedule D Gasoline Dispensing.',
-    filing: 684,
-    B: { initRate: 107.28, initMin: 573, initMax: 200137, rafBase: 684, rafRate: 107.28, rafMin1: 1379, rafMinAdd: 573, rafMax: 200137, ptoRate: 53.64, ptoMin: 407, ptoMax: 100069 },
-    D: { init: 378.10, pto: 144.82, modRate: 522.91 },
-  };
+  // Fee amounts are defined once, in data.js (APT_DATA.fees), and read here at call time.
+  function feeTable() {
+    const d = root.APT_DATA && root.APT_DATA.fees;
+    if (!d || !d.B || !d.D) throw new Error('Fee data (data.js) is not loaded.');
+    return d;
+  }
   const r2 = (x) => Math.round(x * 100) / 100;
 
   function feesScheduleB(p) {
     const steps = [];
     const M = nonneg(p.mmbtu, 'Maximum firing rate');
-    const B = FEES.B;
+    const FEES = feeTable(); const B = FEES.B;
     const filing = step(steps, 'Filing fee (3-302)', 'flat', FEES.filing, '$');
     const init = step(steps, 'Initial fee', `clamp(${B.initRate} x ${fmt(M)}, ${B.initMin}, ${B.initMax})`, r2(clamp(B.initRate * M, B.initMin, B.initMax)), '$');
     let raf = 0;
@@ -359,6 +368,7 @@
   function feesScheduleD(p) {
     const steps = [];
     const n = nonneg(p.nozzleProducts, 'Nozzle-products');
+    const FEES = feeTable();
     const filing = step(steps, 'Filing fee (3-302)', 'flat', FEES.filing, '$');
     const init = step(steps, 'Initial fee', `${FEES.D.init} x ${n} nozzle-products`, r2(FEES.D.init * n), '$');
     const pto = step(steps, 'Permit to operate fee', `${FEES.D.pto} x ${n}`, r2(FEES.D.pto * n), '$');
@@ -367,7 +377,7 @@
   }
 
   const api = {
-    K, DATA, FEES, BRIGGS, RESIDENT_BINS, fmt,
+    K, DATA, BRIGGS, RESIDENT_BINS, fmt,
     o2Correct, ppmToLbMMBtu, lbMMBtuToPpm, ppmToMgM3, gPerLtoLbPerGal,
     concConvert, controlEff, combustion, ap42NGFactors, engine, flare, coating,
     chiOverQ, plumeRiseBriggs, dispersion, residentFactor, workerFactor, riskFromConc,

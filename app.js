@@ -136,6 +136,7 @@
         { id: 'name', label: 'Station name', type: 'text', value: 'GDF #1' },
         { id: 'thru', label: 'Gasoline throughput', unit: 'gal/yr', value: 1500000 },
         { id: 'maxday', label: 'Maximum daily throughput', unit: 'gal/day', value: 8000 },
+        { id: 'maxhr', label: 'Maximum hourly throughput', unit: 'gal/hr', value: 1000, help: 'Sets the peak-hour benzene rate for the acute trigger.' },
         { id: 'orvr', label: 'Gallons dispensed to ORVR-equipped vehicles', unit: '%', value: 90, help: 'Onboard refueling vapor recovery is standard on light-duty vehicles built since about 2006.' },
         { id: 'bz', label: 'Benzene weight fraction of organic emissions', unit: 'fraction', value: 0.003, help: 'Your assumption. Use the speciation the Air District or CARB applies to the case.' },
         { id: 'nozzles', label: 'Nozzle-products (for fees)', unit: 'count', value: 12 },
@@ -144,27 +145,34 @@
         const g = D.gdf;
         const steps = [];
         let ef = 0;
+        const terms = [];
         const fo = Math.min(Math.max(+v.orvr, 0), 100) / 100;
         for (const c of g.components) {
           if (c.orvr) {
             const x = (1 - fo) * c.orvr.non + fo * c.orvr.orvr;
-            steps.push({ label: c.name, expr: `${fmt(1 - fo)} x ${c.orvr.non} + ${fmt(fo)} x ${c.orvr.orvr}`, value: x, unit: 'lb/1,000 gal' }); ef += x;
-          } else { steps.push({ label: c.name, expr: 'CARB EVR factor', value: c.lbPerKgal, unit: 'lb/1,000 gal' }); ef += c.lbPerKgal; }
+            steps.push({ label: c.name, expr: `${fmt(1 - fo)} x ${c.orvr.non} + ${fmt(fo)} x ${c.orvr.orvr}`, value: x, unit: 'lb/1,000 gal' }); ef += x; terms.push(fmt(x));
+          } else { steps.push({ label: c.name, expr: 'CARB EVR factor', value: c.lbPerKgal, unit: 'lb/1,000 gal' }); ef += c.lbPerKgal; terms.push(fmt(c.lbPerKgal)); }
         }
-        steps.push({ label: 'Total organic factor', expr: g.components.map((c) => c.lbPerKgal).join(' + '), value: ef, unit: 'lb/1,000 gal' });
+        steps.push({ label: 'Total organic factor', expr: terms.join(' + '), value: ef, unit: 'lb/1,000 gal' });
         const lbyr = +v.thru / 1000 * ef;
         steps.push({ label: 'Annual POC', expr: `${fmt(+v.thru)} gal / 1,000 x ${fmt(ef)}`, value: lbyr, unit: 'lb/yr' });
         const lbday = +v.maxday / 1000 * ef;
         steps.push({ label: 'Maximum day POC', expr: `${fmt(+v.maxday)} / 1,000 x ${fmt(ef)}`, value: lbday, unit: 'lb/day' });
         const benz = lbyr * (+v.bz);
         steps.push({ label: 'Benzene', expr: `${fmt(lbyr)} x ${v.bz}`, value: benz, unit: 'lb/yr' });
-        const rows = [{ pol: 'POC', lbhr: lbday / 24, lbday, lbyr, tpy: lbyr / 2000 }];
+        const pocHr = +v.maxhr / 1000 * ef;
+        const benzHr = pocHr * (+v.bz);
+        steps.push({ label: 'Peak-hour benzene', expr: `${fmt(+v.maxhr)} gal/hr / 1,000 x ${fmt(ef)} x ${v.bz}`, value: benzHr, unit: 'lb/hr' });
+        const rows = [{ pol: 'POC', lbhr: pocHr, lbday, lbyr, tpy: lbyr / 2000 }];
         const t = D.tac.find((x) => x.key === 'benzene');
         const extra = [];
         if (t && t.chronicTrig) extra.push(benz > t.chronicTrig
           ? { level: 'warn', text: `<b>Benzene ${fmt(benz)} lb/yr exceeds the chronic trigger of ${t.chronicTrig} lb/yr.</b> A health risk assessment is required.` }
           : { level: 'ok', text: `Benzene ${fmt(benz)} lb/yr is below the chronic trigger of ${t.chronicTrig} lb/yr.` });
-        return emissionsResult(v.name, { out: { rows }, steps }, { mmbtu: 0, kind: 'gdf', nozzles: +v.nozzles, tac: { benzene: { lbyr: benz, lbhr: benz / 8760 } } }, [g.source], extra);
+        if (t && t.acuteTrig) extra.push(benzHr > t.acuteTrig
+          ? { level: 'warn', text: `<b>Peak-hour benzene ${fmt(benzHr)} lb/hr exceeds the acute trigger of ${t.acuteTrig} lb/hr.</b>` }
+          : { level: 'ok', text: `Peak-hour benzene ${fmt(benzHr)} lb/hr is below the acute trigger of ${t.acuteTrig} lb/hr.` });
+        return emissionsResult(v.name, { out: { rows }, steps }, { mmbtu: 0, kind: 'gdf', nozzles: +v.nozzles, tac: { benzene: { lbyr: benz, lbhr: benzHr } } }, [g.source], extra);
       },
     },
     {
@@ -275,9 +283,7 @@
   function renderNav(active) {
     const groups = [];
     for (const m of MODULES) { let g = groups.find((x) => x.name === m.group); if (!g) groups.push(g = { name: m.group, items: [] }); g.items.push(m); }
-    let n = 0;
     $('#nav').innerHTML = groups.map((g) => `<div class="nav-group"><h2>${esc(g.name)}</h2><ul>${g.items.map((m) => `<li><button class="nav-btn" data-id="${m.id}"${m.id === active ? ' aria-current="page"' : ''}>${esc(m.title)}</button></li>`).join('')}</ul></div>`).join('');
-    void n;
     $('#nav').onclick = (e) => { const b = e.target.closest('.nav-btn'); if (b) go(b.dataset.id); };
     const list = store.get();
     const pill = $('#projectPill');
@@ -429,8 +435,12 @@
     const projTac = {};
     for (const s of store.get()) if (s.tac) for (const [k, x] of Object.entries(s.tac)) { projTac[k] = projTac[k] || { lbyr: 0, lbhr: 0 }; projTac[k].lbyr += x.lbyr; projTac[k].lbhr += x.lbhr; }
     const pre = Object.entries(projTac);
-    const rowsInit = [0, 1, 2, 3].map((i) => ({ key: params['t' + i] || (pre[i] ? pre[i][0] : (i === 0 ? 'dpm' : '')), lbyr: params['y' + i] || (pre[i] ? +pre[i][1].lbyr.toPrecision(4) : (i === 0 ? 1.4 : '')), lbhr: params['h' + i] || (pre[i] ? +pre[i][1].lbhr.toPrecision(4) : (i === 0 ? 0.03 : '')) }));
-    const disp = Object.assign({ meth: 'ceqa', hs: 3, wind: 1, stab: 'F', terr: 'urban', rec: 50, pr: false, vs: 40, diam: 0.2, ts: 750, br: '233', aqmd: 'no' }, params);
+    const has = (k) => Object.prototype.hasOwnProperty.call(params, k);
+    const fromLink = has('t0');
+    const rowsInit = [0, 1, 2, 3].map((i) => fromLink
+      ? { key: params['t' + i] || '', lbyr: has('y' + i) ? params['y' + i] : '', lbhr: has('h' + i) ? params['h' + i] : '' }
+      : { key: pre[i] ? pre[i][0] : (i === 0 && !pre.length ? 'dpm' : ''), lbyr: pre[i] ? +pre[i][1].lbyr.toPrecision(4) : (i === 0 && !pre.length ? 1.4 : ''), lbhr: pre[i] ? +pre[i][1].lbhr.toPrecision(4) : (i === 0 && !pre.length ? 0.03 : '') });
+    const disp = Object.assign({ meth: 'ceqa', hs: 3, wind: 1, stab: 'F', terr: 'urban', rec: 50, pr: false, vs: 40, diam: 0.2, ts: 750, aqmd: false }, params);
     root.innerHTML = `<div class="mod-grid"><form class="inputs" novalidate>
       <fieldset><legend>Step 1. Toxic emissions from the project</legend>
       ${rowsInit.map((r, i) => `<div class="fld"><label for="t${i}">Contaminant ${i + 1}</label><select id="t${i}" data-k="t${i}"><option value="">(none)</option>${tacOpts.map((o) => `<option value="${o[0]}"${o[0] === r.key ? ' selected' : ''}>${esc(o[1])}</option>`).join('')}</select></div>
@@ -447,7 +457,7 @@
         <div class="fld" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div><label for="vs">Exit m/s</label><input id="vs" data-k="vs" type="number" step="any" value="${esc(disp.vs)}"></div><div><label for="diam">Diam. m</label><input id="diam" data-k="diam" type="number" step="any" value="${esc(disp.diam)}"></div><div><label for="ts">Exit K</label><input id="ts" data-k="ts" type="number" step="any" value="${esc(disp.ts)}"></div></div>
       </fieldset>
       <fieldset><legend>Step 3. Exposure assumptions</legend>
-        <div class="fld"><label for="br">Adult (age 16 to 30) breathing rate</label><select id="br" data-k="br"><option value="233"${disp.br === '233' ? ' selected' : ''}>233 L/kg-day (OEHHA 2015, 80th percentile, 16 to 30)</option><option value="261"${disp.br === '261' ? ' selected' : ''}>261 L/kg-day (as in the Air District CEQA Health Risk Calculator 5.0)</option></select></div>
+        <p class="help">Residential exposure: 30 years, breathing rates 361, 1,090, 572 and 261 L/kg-day by age group, as in the Air District CEQA Health Risk Calculator 5.0.</p>
         <div class="fld check"><label><input type="checkbox" id="aqmd" data-k="aqmd"${disp.aqmd === true || disp.aqmd === 'true' ? ' checked' : ''}> <span>Project is in an Overburdened Community (6 in a million limit)</span></label></div>
       </fieldset>
       <div class="btn-row"><button type="button" class="btn ghost" data-act="copy">Copy worksheet</button></div>
@@ -481,9 +491,8 @@
     steps.push(ceqa
       ? { label: 'Annual chi/Q (Air District CEQA screening value)', expr: 'fixed value used in the Health Risk Calculator 5.0; acute uses the plume 1-hour value above', value: chiAnn, unit: 'ug/m3 per g/s' }
       : { label: 'Annual chi/Q', expr: `${fmt(chi)} x 0.1 (AERSCREEN annual factor)`, value: chiAnn, unit: 'ug/m3 per g/s' });
-    const brAdult = +v.br || 233;
-    const rf = residentFactor(brAdult);
-    steps.push({ label: 'Residential exposure factor', expr: `(361x10x0.25 + 1090x10x2 + 572x3x14 + ${brAdult}x1x14x0.73) x 350/365 x 1e-6 / 70`, value: rf, unit: 'per (ug/m3 x CPF)' });
+    const rf = A.residentFactor();
+    steps.push({ label: 'Residential exposure factor', expr: `(${A.RESIDENT_BINS.map((b) => `${b.DBR}x${b.ASF}x${b.ED}x${b.FAH}`).join(' + ')}) x 350/365 x 1e-6 / 70`, value: rf, unit: 'per (ug/m3 x CPF)' });
     let risk = 0, hic = 0, hia = 0, worker = 0;
     let anyTrig = false;
     for (let i = 0; i < 4; i++) {
@@ -529,10 +538,6 @@
       sources: [lim.source, D.tacSource, 'Exposure: OEHHA (2015) Air Toxics Hot Spots Program Guidance Manual for Preparation of Health Risk Assessments; residential 30-year exposure with age sensitivity factors 10, 10, 3 and 1, fraction of time at home 1 below age 16 and 0.73 for ages 16 to 30, 350 days/yr, 70-year averaging time.', 'Dispersion: Gaussian plume, ground-level centerline, Briggs (1973) dispersion coefficients as tabulated in Turner (1994) Workbook of Atmospheric Dispersion Estimates; annual = 0.1 x 1-hour max per EPA AERSCREEN guidance. This screen does not model building downwash, terrain or real meteorology and is not a substitute for AERMOD and HARP 2.'],
     };
   }
-  function residentFactor(adultBR) {
-    const s = 361 * 10 * 0.25 * 1 + 1090 * 10 * 2 * 1 + 572 * 3 * 14 * 1 + adultBR * 1 * 14 * 0.73;
-    return s * (350 / 365) * 1e-6 / 70;
-  }
 
   // ---------- About ----------
   function renderAbout(root) {
@@ -556,8 +561,10 @@
 
   // ---------- Charts (canvas, no libraries) ----------
   function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  let lastChart = null;
   function drawChart(cv, spec) {
     if (!cv || !spec) return;
+    lastChart = spec;
     const dpr = window.devicePixelRatio || 1;
     const W = cv.clientWidth || 600, Hh = cv.clientHeight || 260;
     cv.width = W * dpr; cv.height = Hh * dpr;
@@ -615,6 +622,6 @@
     go(id || 'combustion', params);
   }
   window.addEventListener('hashchange', fromHash);
-  let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(fromHash, 200); });
+  let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const cv = $('#view canvas'); if (cv && lastChart) drawChart(cv, lastChart); }, 200); });
   fromHash();
 })();
