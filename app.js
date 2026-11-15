@@ -235,7 +235,7 @@
     },
     {
       id: 'control', group: 'Check the math', title: 'Control efficiency',
-      intro: 'Overall control is capture times device efficiency, and a second device in series acts only on what the first lets through. A common error is applying 95% destruction when only 90% of the stream reaches the device.',
+      intro: 'Overall control is capture times the efficiency of the control train. A second device in series treats only the captured stream, so overall control can never exceed capture efficiency. A common error is applying 95% destruction when only 90% of the stream reaches the device.',
       fields: [
         { id: 'unc', label: 'Uncontrolled emissions', unit: 'lb/day', value: 100 },
         { id: 'cap', label: 'Capture efficiency', unit: '%', value: 90 },

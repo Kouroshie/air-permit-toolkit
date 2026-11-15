@@ -55,6 +55,9 @@ near('Overall control', c.out.overall, 0.855);
 near('Residual', c.out.residual, 14.5);
 const c2 = A.controlEff({ uncontrolled: 100, capture: 100, destruction: 90, secondary: 90 });
 near('Two devices in series', c2.out.overall, 0.99);
+const c3 = A.controlEff({ uncontrolled: 100, capture: 90, destruction: 95, secondary: 90 });
+near('Second device acts on captured stream only: 0.90 x (1 - 0.05 x 0.10)', c3.out.overall, 0.9 * (1 - 0.05 * 0.1));
+truthy('Overall control never exceeds capture efficiency', c3.out.overall <= 0.9);
 
 // 7. Coating: 340 g/L = 2.837 lb/gal
 near('340 g/L -> lb/gal', A.gPerLtoLbPerGal(340), 340 * 3.785411784 / 453.592);

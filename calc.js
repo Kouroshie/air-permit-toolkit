@@ -114,8 +114,9 @@
     const cap = clamp(nonneg(p.capture, 'Capture efficiency'), 0, 100) / 100;
     const des = clamp(nonneg(p.destruction, 'Control efficiency'), 0, 100) / 100;
     const sec = p.secondary ? clamp(nonneg(p.secondary, 'Second device efficiency'), 0, 100) / 100 : 0;
-    const overall = step(steps, 'Overall control (capture x control, then a second device in series)',
-      `1 - [1 - ${cap} x ${des}] x (1 - ${sec})`, 1 - (1 - cap * des) * (1 - sec), 'fraction');
+    // The second device treats only the captured stream, so overall control can never exceed capture.
+    const overall = step(steps, 'Overall control (capture x control train; a second device treats only the captured stream)',
+      `${cap} x [1 - (1 - ${des}) x (1 - ${sec})]`, cap * (1 - (1 - des) * (1 - sec)), 'fraction');
     const uncontrolled = nonneg(p.uncontrolled || 0, 'Uncontrolled emissions');
     const residual = step(steps, 'Controlled emissions', `${fmt(uncontrolled)} x (1 - ${fmt(overall)})`, uncontrolled * (1 - overall), p.unit || '');
     return { out: { overall, residual }, steps };
