@@ -41,7 +41,7 @@ The Air District publishes a 316-page Permit Handbook, separate Excel spreadshee
 
 ## Limits
 
-This is a screening and teaching tool. Rules and fees change, the dispersion screen is not AERMOD, and default emission factors are generic. Final permit decisions rest on the current rule text and an engineer's review.
+This is a screening and teaching tool, not a permitting tool, and its results are not permit decisions. Rules and fees change, the dispersion screen is not AERMOD, and default emission factors are generic. Final permit decisions rest on the current rule text and an engineer's review.
 
 ## Run locally
 

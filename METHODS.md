@@ -6,7 +6,7 @@ Seyed Kourosh Mahjour, PhD. Version 1.1, November 15, 2026.
 
 The toolkit reproduces the routine arithmetic of an air permit evaluation for stationary sources in the San Francisco Bay Area: emission rates, the Best Available Control Technology (BACT) and offset triggers of Regulation 2, Rule 2, the toxic air contaminant (TAC) screening of Regulation 2, Rule 5, and new-source fees under Regulation 3. Each calculator returns its result together with the ordered list of arithmetic steps, units and sources, so a reader can repeat the calculation by hand.
 
-It is a screening and teaching tool. It does not replace dispersion modeling with AERMOD, risk calculation with HARP 2, or an engineer's application of the current rule text. It is an independent project and is not affiliated with or endorsed by the Bay Area Air District.
+It is a screening and teaching tool, not a permitting tool, and its results are not permit decisions. It does not replace dispersion modeling with AERMOD, risk calculation with HARP 2, or an engineer's application of the current rule text. It is an independent project and is not affiliated with or endorsed by the Bay Area Air District.
 
 ## 2. Existing Air District resources
 
