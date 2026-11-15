@@ -528,7 +528,7 @@
     flags.push(overProj
       ? { level: 'stop', text: `<b>Screening estimate is above a project limit</b> (2-5-302): cancer ${fmt(risk)} vs ${projLimit} in a million, chronic HI ${fmt(hic)} and acute HI ${fmt(hia)} vs ${lim.projectHI}. Screening is deliberately conservative: the next step is a refined HRA (AERMOD with HARP 2), then controls or project changes if the refined result still exceeds the limit.` }
       : { level: 'ok', text: `Within the project limits (2-5-302): cancer ${fmt(risk)} of ${projLimit} in a million, chronic HI ${fmt(hic)} and acute HI ${fmt(hia)} of ${lim.projectHI}.` });
-    flags.push({ level: 'info', text: `Worker cancer risk at the same point: ${fmt(worker)} in a million (8-hour breathing rate 230 L/kg, 250 days/yr, 25 years).` });
+    flags.push({ level: 'info', text: `Worker cancer risk at the same point: ${fmt(worker)} in a million (8-hour breathing rate 230 L/kg-day, 250 days/yr, 25 years).` });
     return {
       flags,
       tables: [{ head: ['Contaminant', 'lb/yr', 'Trigger lb/yr', 'lb/hr', 'Trigger lb/hr', 'Risk per million', 'Chronic HI'], rows: rows.concat([['Total', '', '', '', '', fmt(risk), fmt(hic)]]) }],
